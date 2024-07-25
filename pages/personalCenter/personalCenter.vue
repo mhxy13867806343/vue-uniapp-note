@@ -1,66 +1,38 @@
 <script setup>
-import  dicts from '@/common/dicts'
-import useMenu from "@/hooks/useMenu";
-const { showPopover } = useMenu({type:'person'});
-const newsList = ref(dicts.personMenuList.slice(0, dicts.personMenuList.length-1))
+const onClickBack=()=>{
+	uni.showModal({
+		title: '提示',
+		content: '是否要退出?',
+		success: function (res) {
+			if (res.confirm) {
+				uni.showToast({
+					title: '退出成功',
+					icon: 'none',
+					duration: 2000,
+				})
+				setTimeout(()=>{
+					uni.reLaunch({
+						url: '/pages/login/login',
+					});
+				},1500)
+			} else if (res.cancel) {
+				console.log('用户点击取消');
+			}
+		}
+	});
+}
 </script>
 <template>
 	<view>
-		<van-nav-bar title="个人中心" left-text="" :left-arrow="false" fixed placeholder z-index="19999"
-		ref="navBar"
-		>
-			<template #right>
-				<van-popover
-					trigger="click"  theme="dark"
-					v-model="showPopover"
-					placement="bottom-end"
-					:actions="newsList"
-				>
-					<uv-cell center :title="item.text"
-					         v-for="(item, index) in dicts.personMenuList"
-					         isLink :url="item.url"
-					         :titleStyle="{
-								 color: '#fff',
-								 fontSize: '24rpx',
-				
-					         }"
-					
-					></uv-cell>
-					<template #reference>
-						<uv-icon name="plus-circle" size="24"></uv-icon>
-					</template>
-				</van-popover>
-			</template>
-		</van-nav-bar>
 		<view class="app-container">
-			<view class="p-flex-justify-content p-flex-justify-center p-flex-wrap-wrap">
-				<uv-avatar  fontSize="18" randomBgColor></uv-avatar>
-				<uv-cell :border="false" class="p-text-h4 p-text-h4-align-center" title="昵称" isLink url="/pages/personalinformation/personalinformation"></uv-cell>
-			</view>
 			<uv-cell-group title="功能设置">
-				<template #title>
-					<span class="p-fctuin-title">
-						<van-icon name="setting-o" /><span>功能设置</span>
-					</span>
-				</template>
-				<uv-cell center title="我的动态" isLink url="/pages/myDynamics/myDynamics">
-					<template #icon><van-icon name="fire-o" /></template>
-				</uv-cell>
-				<uv-cell center title="我的个性签名" isLink url="/pages/signature/signature">
-					<template #icon><van-icon name="description-o" /></template>
-				</uv-cell>
-				<uv-cell center title="我的历史行为" isLink url="/pages/userHistory/userHistory">
-					<template #icon><van-icon name="browsing-history-o" /></template>
-					
-				</uv-cell>
+				<view class="p-margin-top">
+					<van-button type="info" block @click="onClickBack">退出</van-button>
+				</view>
 			</uv-cell-group>
 		
 		</view>
-	
 	</view>
-
-
-
 </template>
 
 

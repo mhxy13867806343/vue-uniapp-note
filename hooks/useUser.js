@@ -10,8 +10,8 @@ export default ()=>{
    
     const formRef=ref(null)
     const model=reactive({
-        account: '18072783978',
-        password: '123456',
+        account: '',
+        password: '',
         newpassword: '',
     })
     const isPassword=ref(true)
@@ -21,23 +21,11 @@ export default ()=>{
         ],
         password: [
             { required: true, message: '请输入密码', trigger: ['blur', 'change']},
-            {
-                validator: (rule, value, callback) => {
-                    if(!getRegExPassword(value)) {
-                        callback ( new Error ( '密码强度太弱啦,第我位字符必须以字母或特殊字符开头，最少6位，包括至少1个大写字母，1个小写字母，1个数字，1个特殊字符' ) )
-                    }
-                    callback()
-                },
-                trigger: ['blur', 'change']
-            }
         ],
         newpassword: [
             { required: true, message: '请输入新密码', trigger: ['blur', 'change']},
             {
                 validator: (rule, value, callback) => {
-                    if(!getRegExPassword(value)) {
-                        callback ( new Error ( '密码强度太弱啦,第我位字符必须以字母或特殊字符开头，最少6位，包括至少1个大写字母，1个小写字母，1个数字，1个特殊字符' ) )
-                    }
                     if(value!== model.password) {
                         callback ( new Error ( '两次密码不一致' ) )
                     }

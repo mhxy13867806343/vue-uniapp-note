@@ -76,7 +76,9 @@ $uni-color-paragraph: #3F536E; // 文章段落颜色
 $uni-font-size-paragraph:15px;
 @import '@/uni_modules/uv-ui-tools/theme.scss';
 
-
+.van-empty__bottom{
+  width: 100%;
+}
 .app-container{
   padding: 30rpx;
 }
