@@ -32,7 +32,6 @@ const request = (options={}) => {
 				const datas=res.data
 				const {code,data,message}=datas
 				if(code===401){
-					
 					uni.showToast({
 						title:message,
 						icon:'none'
