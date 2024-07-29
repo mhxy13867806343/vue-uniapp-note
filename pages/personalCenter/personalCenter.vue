@@ -1,4 +1,5 @@
 <script setup>
+import store from "@/store";
 const onClickBack=()=>{
 	uni.showModal({
 		title: '提示',
@@ -10,6 +11,7 @@ const onClickBack=()=>{
 					icon: 'none',
 					duration: 2000,
 				})
+				store.dispatch('clearToken');
 				setTimeout(()=>{
 					uni.reLaunch({
 						url: '/pages/login/login',

@@ -1,40 +1,21 @@
 <script setup>
-    import {
-        Dialog
-    } from 'vant';
-    const list =ref([
-		    { title: "清晨思绪", timestamp: "2024-01-02 12:34:12" },
-		    { title: "午后的阳光非常明媚", timestamp: "2024-01-02 12:34:12" },
-		    { title: "读书笔记", timestamp: "2024-01-02 12:34:12" },
-		    { title: "旅行的意义", timestamp: "2024-01-02 12:34:12" },
-		    { title: "关于时间管理的几点思考", timestamp: "2024-01-02 12:34:12" },
-		    { title: "如何改善睡眠质量", timestamp: "2024-01-02 12:34:12" },
-		    { title: "理财小技巧", timestamp: "2024-01-02 12:34:12" },
-		    { title: "美食探店", timestamp: "2024-01-02 12:34:12" },
-		    { title: "工作与生活的平衡", timestamp: "2024-01-02 12:34:12" },
-		    { title: "孤独", timestamp: "2024-01-02 12:34:12" },
-		    { title: "人生的选择与决定", timestamp: "2024-01-02 12:34:12" },
-		    { title: "夜晚的城市风光", timestamp: "2024-01-02 12:34:12" },
-		    { title: "快速学习新技能的方法", timestamp: "2024-01-02 12:34:12" },
-		    { title: "电影欣赏", timestamp: "2024-01-02 12:34:12" },
-		    { title: "音乐与情感", timestamp: "2024-01-02 12:34:12" },
-		    { title: "书籍推荐", timestamp: "2024-01-02 12:34:12" },
-		    { title: "健康饮食的重要性", timestamp: "2024-01-02 12:34:12" },
-		    { title: "晨跑的好处", timestamp: "2024-01-02 12:34:12" },
-		    { title: "节日庆典", timestamp: "2024-01-02 12:34:12" },
-		    { title: "网络安全基础", timestamp: "2024-01-02 12:34:12" },
-		    { title: "编程技巧", timestamp: "2024-01-02 12:34:12" },
-		    { title: "关于创业的思考", timestamp: "2024-01-02 12:34:12" },
-		    { title: "成功的习惯", timestamp: "2024-01-02 12:34:12" },
-		    { title: "朋友之间的互助", timestamp: "2024-01-02 12:34:12" },
-		    { title: "学习外语的策略", timestamp: "2024-01-02 12:34:12" },
-		    { title: "文化差异的体验", timestamp: "2024-01-02 12:34:12" },
-		    { title: "自我提升的途径", timestamp: "2024-01-02 12:34:12" },
-		    { title: "心理健康的重要性", timestamp: "2024-01-02 12:34:12" },
-		    { title: "社交媒体的影响", timestamp: "2024-01-02 12:34:12" },
-		    { title: "保持创造力的方法", timestamp: "2024-01-02 12:34:12" }
-	    ]
-    )
+import {getNote,delNote} from '@/api/outer'
+import {
+	Dialog , Toast
+} from 'vant';
+    const list =ref([])
+	onShow(()=>{
+		getNote1()
+	})
+const getNote1=()=>{
+	const data={
+		page:1,
+		pageSize:10
+	}
+	getNote(data).then(res=>{
+		list.value=res.data
+	})
+}
     const onClickNote = (type="add",item={},index=0) => {
 		if(type === 'add'){
             uni.navigateTo({
@@ -42,11 +23,30 @@
             })
 		}else{
 			uni.navigateTo({
-				url:`/pages/note/note?id=${index}&type=edit`
+				url:`/pages/note/note?id=${item.id}&type=${type}`
 			})
 		}
 	   
     }
+	const onClickDelNote=(item,index)=>{
+		uni.showModal( {
+			title : '提示' ,
+			content : '是否要删除此条笔记呢?' ,
+			success : function ( res ) {
+				if ( res.confirm ) {
+					delNote(item.id).then(res=>{
+						Toast('删除成功')
+						list.value=[]
+						getNote1()
+					}).catch(e=>{
+						console.log(e)
+					})
+				} else if ( res.cancel ) {
+					console.log ( '用户点击取消' );
+				}
+			}
+		})
+	}
     const showPopover = ref(false)
     const actions = ref([{
         text: '新建日志',
@@ -108,12 +108,31 @@
             </template>
         </van-nav-bar>
 	    <van-cell-group inset v-if="list.length">
-		    <van-cell center :title="item.title" :label="item.timestamp"
+		    <van-cell center
 		              is-link
 		              
 		              v-for="(item,index) in list" :key="index"
-		              @click="onClickNote('edit',item,index)"
-		    />
+		             
+		    >
+			    <template #title>
+				    <span class="custom-title" >{{ item.title}}</span>
+			    </template>
+			    <template #label>
+				    <span class="custom-title">{{ item.createdAt}}</span>
+			    </template>
+			    <template #right-icon>
+				    <view class="van-row--flex">
+					    <svg t="1722260449476"
+					         @click="onClickNote('edit',item,index)"
+					         class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5442" width="200" height="200"><path d="M862.709333 116.042667a32 32 0 1 1 45.248 45.248L455.445333 613.813333a32 32 0 1 1-45.258666-45.258666L862.709333 116.053333zM853.333333 448a32 32 0 0 1 64 0v352c0 64.8-52.533333 117.333333-117.333333 117.333333H224c-64.8 0-117.333333-52.533333-117.333333-117.333333V224c0-64.8 52.533333-117.333333 117.333333-117.333333h341.333333a32 32 0 0 1 0 64H224a53.333333 53.333333 0 0 0-53.333333 53.333333v576a53.333333 53.333333 0 0 0 53.333333 53.333333h576a53.333333 53.333333 0 0 0 53.333333-53.333333V448z" fill="#000000" p-id="5443"></path></svg>
+					    <svg t="1722260164815"
+					         @click="onClickNote('details',item,index)"
+					         
+					         class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4432" width="200" height="200"><path d="M298.666667 341.333333h384v42.666667H298.666667v-42.666667z m0 128h298.666666v42.666667H298.666667v-42.666667z m0 128h298.666666v42.666667H298.666667v-42.666667zM170.666667 128h682.666666v554.666667h42.666667V106.517333c0-11.52-9.557333-21.184-21.333333-21.184H149.333333c-11.626667 0-21.333333 9.557333-21.333333 21.376v810.581334C128 929.066667 137.557333 938.666667 149.333333 938.666667h490.666667v-42.666667H170.666667V128z m469.333333 576.042667c0-11.797333 9.728-21.376 21.376-21.376H896L640 938.666667V704.042667z m153.002667 21.290666H682.666667v110.336L793.002667 725.333333z" fill="#3D3D3D" p-id="4433"></path></svg>
+					    <van-icon name="delete-o" @click="onClickDelNote(item,index)"/>
+				    </view>
+			    </template>
+		    </van-cell>
 	    </van-cell-group>
 	    <van-empty  v-else>
 		    <van-button round type="primary" class="bottom-button"

@@ -1,5 +1,5 @@
 import store from "@/store";
-import {getRegExPassword} from '@/common/regtools'
+import {postLogin,postRegister} from '@/api/outer.js'
 import {
     toast
 } from "@/uni_modules/uv-ui-tools/libs/function";
@@ -36,20 +36,58 @@ export default ()=>{
         ],
     })
     
-    const onClickSubmit = () => {
-        toast('开始登录了')
-        store.dispatch('setUserToken', {
-            token: '1234',
-            userinfo: {
-                a: 1,
-                b: 2
-            }
-        })
-        setTimeout(() => {
-            uni.reLaunch({
-                url: '/pages/home/home'
+    const onClickLoginSubmit = () => {
+        if (!model.account.length) {
+            toast('请输入用户名');
+            return;
+        }
+        if (!model.password.length) {
+            toast('请输入密码');
+            return;
+        }
+        postLogin({
+            username: model.account,
+            password:model.password
+        }).then(res=>{
+            store.dispatch('setUserToken', {
+                token: res.data.token,
+                user: res.data
             })
-        }, 2000)
+            setTimeout(() => {
+                uni.reLaunch({
+                    url: '/pages/home/home'
+                })
+            }, 2000)
+        }).catch(e=>{
+            toast(e.message)
+        })
+      
+     
+    }
+    const onClickRegisterSubmit = () => {
+        if (!model.account.length) {
+            toast('请输入用户名');
+            return;
+        }
+        if (!model.password.length) {
+            toast('请输入密码');
+            return;
+        }
+        postRegister({
+            username: model.account,
+            password:model.password
+        }).then(res=>{
+            toast("注册成功")
+            setTimeout(() => {
+                uni.navigateTo({
+                    url: '/pages/login/login'
+                })
+            }, 2000)
+        }).catch(e=>{
+            toast(e.message)
+        })
+        
+        
     }
     // 提交
     const  submit=(type)=> {
@@ -62,10 +100,10 @@ export default ()=>{
            
             if(type==='login'){
                 // 登录
-                onClickSubmit()
+                onClickLoginSubmit()
             }else if(type==='register'){
                 // 注册
-                alert('注册成功')
+                onClickRegisterSubmit()
             }
             
         }).catch(errors => {

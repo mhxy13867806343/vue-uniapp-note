@@ -17,10 +17,16 @@ const store = new Vuex.Store({
 		//设置token
 		setUserData: (state, data={}) => {
 		    state.token = data.token || ''
-			state.userInfo = data.userinfo
+			state.userInfo = data
 			setStorageSync('token',data.token)
-			setStorageSync('user',data.userinfo)
+			setStorageSync('user',data)
 		},
+		clear(state){
+			state.token=''
+			state.userInfo={}
+			uni.removeStorageSync('token')
+			uni.removeStorageSync('user')
+		}
 	
 	},
 	actions:{
@@ -28,6 +34,10 @@ const store = new Vuex.Store({
 		setUserToken({commit},data={}){
 			commit('setUserData',data)
 		},
+		//清除token
+		clearToken({commit}){
+			commit('clear')
+		}
 	}
 })
 export default store

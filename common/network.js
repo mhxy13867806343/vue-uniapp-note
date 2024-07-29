@@ -1,4 +1,5 @@
 import ".env"
+import store from "@/store";
 import { Toast } from "vant";
 const request = (options={}) => {
 	if (!options.url) {
@@ -21,16 +22,26 @@ const request = (options={}) => {
 			url,
 			data: options.data || {},
 			header: {
-				"x-token": uni.getStorageSync('token') || ''
+				"Authorization": uni.getStorageSync('token') || ''
 			},
 			method: options.method || 'GET',
 			timeout: options.timeout || 60000,
 			dataType: options.dataType || 'json',
 			success: res=>{
 				Toast.clear()
-				const datas=res.data.data
-				const {code,result,message}=datas
-		
+				const datas=res.data
+				const {code,data,message}=datas
+				if(code===401){
+					uni.showToast({
+						title:message,
+						icon:'none'
+					})
+					store.dispatch('clearToken')
+					uni.reLaunch({
+						url:'/pages/login/login'
+					})
+					return
+				}
 				if(code!==200){
 					uni.showToast({
 						title:message,
@@ -39,7 +50,7 @@ const request = (options={}) => {
 					reject(datas)
 					return
 				}
-				resolve(result)
+				resolve(datas)
 			},
 			fail: err=>{
 				uni.showToast({

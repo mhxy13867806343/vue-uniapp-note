@@ -43,5 +43,8 @@
 <style lang="scss">
     @import '@/uni_modules/uv-ui-tools/index.scss';
    @import '@/static/font/iconfont.css';
-   
+    svg{
+	    width: 26rpx;
+	    height: 26rpx;
+    }
 </style>
